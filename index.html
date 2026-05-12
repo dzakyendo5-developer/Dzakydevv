@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Game Tebak Warna</title>
+<title>Cocokkan Warna</title>
 
 <style>
 
@@ -15,9 +15,9 @@
 }
 
 body{
+    font-family:Arial, sans-serif;
     background:#111;
     color:white;
-    font-family:Arial;
     height:100vh;
     display:flex;
     justify-content:center;
@@ -26,67 +26,92 @@ body{
 
 .container{
     width:100%;
-    max-width:420px;
+    max-width:430px;
     padding:20px;
     text-align:center;
 }
 
-h1{
-    margin-bottom:20px;
-    font-size:32px;
+/* HALAMAN START */
+
+#startScreen{
+    display:block;
 }
 
-#colorBox{
+#gameScreen{
+    display:none;
+}
+
+h1{
+    font-size:38px;
+    margin-bottom:15px;
+}
+
+p{
+    margin-bottom:20px;
+    color:#ccc;
+}
+
+.startBtn{
+    padding:15px 35px;
+    font-size:20px;
+    border:none;
+    border-radius:15px;
+    background:white;
+    color:black;
+    font-weight:bold;
+}
+
+/* GAME */
+
+.colorTarget{
     width:100%;
-    height:250px;
+    height:180px;
     border-radius:20px;
-    margin-bottom:25px;
+    margin-bottom:20px;
     box-shadow:0 0 20px rgba(255,255,255,0.2);
 }
 
-.buttons{
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:10px;
+.colorPlayer{
+    width:100%;
+    height:180px;
+    border-radius:20px;
+    margin-top:20px;
+    margin-bottom:20px;
+    border:3px solid white;
 }
 
-button{
-    padding:15px;
-    border:none;
-    border-radius:15px;
+.sliderBox{
+    text-align:left;
+    margin-bottom:15px;
+}
+
+label{
     font-size:18px;
-    font-weight:bold;
-    cursor:pointer;
 }
 
-button:active{
-    transform:scale(0.95);
+input[type=range]{
+    width:100%;
 }
 
-.red{
-    background:red;
-    color:white;
-}
-
-.blue{
-    background:blue;
-    color:white;
-}
-
-.green{
-    background:green;
-    color:white;
-}
-
-#result{
+.result{
     margin-top:20px;
     font-size:24px;
     font-weight:bold;
 }
 
 .score{
-    margin-top:15px;
+    margin-top:10px;
     font-size:20px;
+    color:#00ff99;
+}
+
+.checkBtn{
+    padding:15px 25px;
+    border:none;
+    border-radius:15px;
+    font-size:20px;
+    font-weight:bold;
+    margin-top:10px;
 }
 
 </style>
@@ -95,58 +120,151 @@ button:active{
 
 <div class="container">
 
-    <h1>Tebak Warna</h1>
+    <!-- START SCREEN -->
+    <div id="startScreen">
 
-    <div id="colorBox"></div>
+        <h1>Cocokkan Warna</h1>
 
-    <div class="buttons">
-        <button class="red" onclick="check('red')">Merah</button>
-        <button class="blue" onclick="check('blue')">Biru</button>
-        <button class="green" onclick="check('green')">Hijau</button>
+        <p>
+            Cocokkan warna bawah dengan warna target di atas.
+            Semakin mirip semakin tinggi akurasinya!
+        </p>
+
+        <button class="startBtn" onclick="startGame()">
+            START
+        </button>
+
     </div>
 
-    <div id="result"></div>
+    <!-- GAME SCREEN -->
+    <div id="gameScreen">
 
-    <div class="score">
-        Skor: <span id="score">0</span>
+        <h2>Warna Target</h2>
+
+        <div id="targetColor" class="colorTarget"></div>
+
+        <h2>Warna Kamu</h2>
+
+        <div id="playerColor" class="colorPlayer"></div>
+
+        <!-- RGB -->
+        <div class="sliderBox">
+            <label>Red</label>
+            <input type="range" min="0" max="255" value="128" id="red">
+        </div>
+
+        <div class="sliderBox">
+            <label>Green</label>
+            <input type="range" min="0" max="255" value="128" id="green">
+        </div>
+
+        <div class="sliderBox">
+            <label>Blue</label>
+            <input type="range" min="0" max="255" value="128" id="blue">
+        </div>
+
+        <button class="checkBtn" onclick="checkAccuracy()">
+            CEK AKURASI
+        </button>
+
+        <div class="result" id="result"></div>
+
+        <div class="score" id="score"></div>
+
     </div>
 
 </div>
 
 <script>
 
-const colors = ["red","blue","green"];
+let targetR, targetG, targetB;
 
-let answer = "";
-let score = 0;
+const red = document.getElementById("red");
+const green = document.getElementById("green");
+const blue = document.getElementById("blue");
 
-function newGame(){
+const playerColor = document.getElementById("playerColor");
 
-    answer = colors[Math.floor(Math.random()*colors.length)];
+function startGame(){
 
-    document.getElementById("colorBox").style.background = answer;
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("gameScreen").style.display = "block";
 
-    document.getElementById("result").innerHTML = "";
+    randomColor();
+    updatePlayerColor();
 }
 
-function check(color){
+function randomColor(){
 
-    if(color === answer){
+    targetR = Math.floor(Math.random()*256);
+    targetG = Math.floor(Math.random()*256);
+    targetB = Math.floor(Math.random()*256);
 
-        document.getElementById("result").innerHTML = "Benar!";
-        score++;
+    document.getElementById("targetColor").style.background =
+    `rgb(${targetR}, ${targetG}, ${targetB})`;
+}
 
-    }else{
+function updatePlayerColor(){
 
-        document.getElementById("result").innerHTML = "Salah!";
+    const r = red.value;
+    const g = green.value;
+    const b = blue.value;
+
+    playerColor.style.background =
+    `rgb(${r}, ${g}, ${b})`;
+}
+
+red.addEventListener("input", updatePlayerColor);
+green.addEventListener("input", updatePlayerColor);
+blue.addEventListener("input", updatePlayerColor);
+
+function checkAccuracy(){
+
+    const r = parseInt(red.value);
+    const g = parseInt(green.value);
+    const b = parseInt(blue.value);
+
+    const diff =
+    Math.abs(r-targetR) +
+    Math.abs(g-targetG) +
+    Math.abs(b-targetB);
+
+    let accuracy =
+    100 - Math.floor((diff / 765) * 100);
+
+    if(accuracy < 0){
+        accuracy = 0;
     }
 
-    document.getElementById("score").innerHTML = score;
+    document.getElementById("result").innerHTML =
+    accuracy + "% MIRIP";
 
-    setTimeout(newGame,1000);
+    if(accuracy >= 90){
+        document.getElementById("score").innerHTML =
+        "PERFECT!";
+    }
+    else if(accuracy >= 70){
+        document.getElementById("score").innerHTML =
+        "Bagus!";
+    }
+    else if(accuracy >= 50){
+        document.getElementById("score").innerHTML =
+        "Lumayan!";
+    }
+    else{
+        document.getElementById("score").innerHTML =
+        "Coba lagi!";
+    }
+
+    setTimeout(() => {
+
+        randomColor();
+
+        document.getElementById("result").innerHTML = "";
+        document.getElementById("score").innerHTML = "";
+
+    }, 2500);
 }
-
-newGame();
 
 </script>
 
