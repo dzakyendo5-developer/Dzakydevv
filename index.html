@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Game Tebak Warna</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#111;
+    color:white;
+    font-family:Arial;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container{
+    width:100%;
+    max-width:420px;
+    padding:20px;
+    text-align:center;
+}
+
+h1{
+    margin-bottom:20px;
+    font-size:32px;
+}
+
+#colorBox{
+    width:100%;
+    height:250px;
+    border-radius:20px;
+    margin-bottom:25px;
+    box-shadow:0 0 20px rgba(255,255,255,0.2);
+}
+
+.buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:10px;
+}
+
+button{
+    padding:15px;
+    border:none;
+    border-radius:15px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:active{
+    transform:scale(0.95);
+}
+
+.red{
+    background:red;
+    color:white;
+}
+
+.blue{
+    background:blue;
+    color:white;
+}
+
+.green{
+    background:green;
+    color:white;
+}
+
+#result{
+    margin-top:20px;
+    font-size:24px;
+    font-weight:bold;
+}
+
+.score{
+    margin-top:15px;
+    font-size:20px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Tebak Warna</h1>
+
+    <div id="colorBox"></div>
+
+    <div class="buttons">
+        <button class="red" onclick="check('red')">Merah</button>
+        <button class="blue" onclick="check('blue')">Biru</button>
+        <button class="green" onclick="check('green')">Hijau</button>
+    </div>
+
+    <div id="result"></div>
+
+    <div class="score">
+        Skor: <span id="score">0</span>
+    </div>
+
+</div>
+
+<script>
+
+const colors = ["red","blue","green"];
+
+let answer = "";
+let score = 0;
+
+function newGame(){
+
+    answer = colors[Math.floor(Math.random()*colors.length)];
+
+    document.getElementById("colorBox").style.background = answer;
+
+    document.getElementById("result").innerHTML = "";
+}
+
+function check(color){
+
+    if(color === answer){
+
+        document.getElementById("result").innerHTML = "Benar!";
+        score++;
+
+    }else{
+
+        document.getElementById("result").innerHTML = "Salah!";
+    }
+
+    document.getElementById("score").innerHTML = score;
+
+    setTimeout(newGame,1000);
+}
+
+newGame();
+
+</script>
+
+</body>
+</html>
